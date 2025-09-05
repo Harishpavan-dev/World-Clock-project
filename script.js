@@ -22,7 +22,12 @@ cityInput.addEventListener('input', () => {
     return;
   }
 
-  const matches = timezones.filter(tz => tz.toLowerCase().includes(query)).slice(0, 10);
+  // Filter timezones using partial match on any part
+  const matches = timezones.filter(tz => {
+    const parts = tz.toLowerCase().split('/');
+    return parts.some(p => p.includes(query));
+  }).slice(0, 10);
+
   matches.forEach(match => {
     const div = document.createElement('div');
     div.textContent = match;
@@ -45,13 +50,14 @@ cityInput.addEventListener('input', () => {
 
 // Button click
 getTimeBtn.addEventListener('click', () => {
-  const city = cityInput.value.trim();
-  if (!city) {
+  const query = cityInput.value.trim().toLowerCase();
+  if (!query) {
     alert('Please enter a city name');
     return;
   }
 
-  const timezone = timezones.find(tz => tz.toLowerCase().includes(city.toLowerCase()));
+  // Find timezone by partial match
+  const timezone = timezones.find(tz => tz.toLowerCase().split('/').some(p => p.includes(query)));
   if (!timezone) {
     result.textContent = 'City not found';
     result.classList.add('show');
