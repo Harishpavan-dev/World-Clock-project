@@ -1,12 +1,28 @@
-function updateClocks() {
-  const cities = document.querySelectorAll('.city');
-  cities.forEach(city => {
-    const timezone = city.getAttribute('data-timezone');
-    const time = new Date().toLocaleTimeString('en-US', { timeZone: timezone, hour12: false });
-    city.querySelector('.time').textContent = time;
-  });
-}
+document.getElementById('getTimeBtn').addEventListener('click', () => {
+  const city = document.getElementById('cityInput').value.trim();
+  if (!city) {
+    alert('Please enter a city name');
+    return;
+  }
 
-// Update every second
-setInterval(updateClocks, 1000);
-updateClocks();
+  // Use worldtimeapi.org API to get time
+  fetch(`https://worldtimeapi.org/api/timezone`)
+    .then(res => res.json())
+    .then(timezones => {
+      const timezone = timezones.find(tz => tz.toLowerCase().includes(city.toLowerCase()));
+      if (!timezone) {
+        document.getElementById('result').textContent = 'City not found';
+        return;
+      }
+
+      fetch(`https://worldtimeapi.org/api/timezone/${timezone}`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('result').textContent = `${timezone} : ${data.datetime.slice(11,19)}`;
+        });
+    })
+    .catch(err => {
+      document.getElementById('result').textContent = 'Error fetching time';
+      console.error(err);
+    });
+});
