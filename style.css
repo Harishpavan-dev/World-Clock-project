@@ -1,44 +1,97 @@
+/* Basic styling */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #f0f0f0;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header, footer {
+  background: #fe5617;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2em;
+}
+
+footer p {
+  margin: 5px 0;
+}
+
+footer a {
+  color: #fff;
+  text-decoration: underline;
 }
 
 .container {
+  flex: 1;
   text-align: center;
   background: #fff;
+  margin: 20px auto;
   padding: 40px;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  width: 300px;
+  position: relative;
 }
 
 input {
   padding: 10px;
-  width: 250px;
+  width: 100%;
   border-radius: 5px;
   border: 1px solid #ccc;
+  transition: all 0.3s ease;
 }
 
-button {
-  padding: 10px 20px;
-  margin-left: 10px;
-  border: none;
+input:focus {
+  border-color: #fe5617;
+  box-shadow: 0 0 10px rgba(254,86,23,0.5);
+  outline: none;
+}
+
+#suggestions {
+  text-align: left;
+  margin-top: 5px;
+  border: 1px solid #ccc;
   border-radius: 5px;
+  max-height: 150px;
+  overflow-y: auto;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+#suggestions.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.suggestion-item:hover {
   background: #fe5617;
   color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #e04e10;
 }
 
 #result {
   margin-top: 20px;
   font-size: 1.2em;
   color: #333;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#result.show {
+  opacity: 1;
 }
