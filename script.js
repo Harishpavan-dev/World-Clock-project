@@ -1,4 +1,5 @@
 let timezones = [];
+let intervalId = null;
 
 // Fetch all timezones once
 fetch('https://worldtimeapi.org/api/timezone')
@@ -9,7 +10,9 @@ fetch('https://worldtimeapi.org/api/timezone')
 const cityInput = document.getElementById('cityInput');
 const suggestions = document.getElementById('suggestions');
 const result = document.getElementById('result');
+const getTimeBtn = document.getElementById('getTimeBtn');
 
+// Autocomplete
 cityInput.addEventListener('input', () => {
   const query = cityInput.value.toLowerCase();
   suggestions.innerHTML = '';
@@ -28,7 +31,7 @@ cityInput.addEventListener('input', () => {
       cityInput.value = match;
       suggestions.innerHTML = '';
       suggestions.classList.remove('show');
-      getTime(match);
+      startClock(match);
     });
     suggestions.appendChild(div);
   });
@@ -40,16 +43,41 @@ cityInput.addEventListener('input', () => {
   }
 });
 
-function getTime(timezone) {
-  fetch(`https://worldtimeapi.org/api/timezone/${timezone}`)
-    .then(res => res.json())
-    .then(data => {
-      result.textContent = `${timezone} : ${data.datetime.slice(11,19)}`;
-      result.classList.add('show');
-    })
-    .catch(err => {
-      result.textContent = 'Error fetching time';
-      result.classList.add('show');
-      console.error(err);
-    });
+// Button click
+getTimeBtn.addEventListener('click', () => {
+  const city = cityInput.value.trim();
+  if (!city) {
+    alert('Please enter a city name');
+    return;
+  }
+
+  const timezone = timezones.find(tz => tz.toLowerCase().includes(city.toLowerCase()));
+  if (!timezone) {
+    result.textContent = 'City not found';
+    result.classList.add('show');
+    return;
+  }
+  startClock(timezone);
+});
+
+// Start live clock
+function startClock(timezone) {
+  if (intervalId) clearInterval(intervalId);
+
+  function updateTime() {
+    fetch(`https://worldtimeapi.org/api/timezone/${timezone}`)
+      .then(res => res.json())
+      .then(data => {
+        result.textContent = `${timezone} : ${data.datetime.slice(11,19)}`;
+        result.classList.add('show');
+      })
+      .catch(err => {
+        result.textContent = 'Error fetching time';
+        result.classList.add('show');
+        console.error(err);
+      });
+  }
+
+  updateTime(); // initial call
+  intervalId = setInterval(updateTime, 1000); // update every second
 }
